@@ -1,6 +1,7 @@
 library(shinythemes)
 library(leaflet)
 library(DT)
+library(leaflet.extras)
 # library(htmltools)
 # library(ggplot2)
 # library(dplyr)
@@ -58,51 +59,56 @@ ui <- shinyUI(
                                     HTML(paste("<div style=width:90%;, align=left>
              <h2>Presentation</h2>
     <p>
-      <i>Open-archeOcsean</i> is a curated catalogue of open-source resources regarding the archaeology of the Pacific and Southeasth Asia region, developped in the context of the  <a href=https://www.ocsean.eu/  target=_blank><i>Ocsean. Oceanic and Southeast Asian Navigators</i></a> project. 
+      <i>Open-archeOcsean</i> is a curated catalogue of open-source data sets regarding the archaeology of the Pacific and Southeast Asia region, developped in the context of the  <a href=https://www.ocsean.eu  target=_blank><i>Ocsean. Oceanic and Southeast Asian Navigators</i></a> project. 
+    The data and app code source are available on <a href=https://github.com/sebastien-plutniak/open-archeocsean target=_blank><i>github</i></a>.
     </p>
+    <h3>Map exploration</h3>
+      <p>
+        Draw a rectangle to retrieve the resources corresponding to the selected area.  
+      </p>
+      <p>
+        Note: <i>Open-archeOcsean</i>'s area of interest is defined between lon = [91.1426, 257.6953], and lat = [45.9511, -52.3756]. The coverage of data sets exceeding this surface could have been reduced to the part fitting within this area of interest.
+      </p>
+
+    <h3>Table exploration</h3>
     <p>
-    Textual descriptions of the resource are displayed either by clicking on the map or by hovering the mouse on the resource name in the table.
-    
-    Resources can be explored by:
-               <ul>
-               
-                  <li> <b>Scope</b>:
-                    <ul>
-                      <li><i>Single site</i>: the resource regards one archaeological site, represented as a point on the map.</li>
-                      <li><i>Multi sites</i>: the resource regards several archaeological sites, represented as surfaces on the map.</li>
-                    </ul>
-                  </li>
-                  <li> <b>Access mode</b>:
-                    <ul>
-                      <li><i>Open</i>: the resource can be directly accessed using the provided link.</li>
-                      <li><i>Restricted</i>: access to the resource must be requested using the provided link.</li>
-                      <li><i>Embargoed</i>: access to the resource will be possible in the future.</li>
-                    </ul>
-                  </li>
-                  <li> <b>Data structure</b>:
-                    <ul>
-                      <li><i>Dataset</i>: flat data structure (e.g., CSV, XLSX, PDF formats).</li>
-                      <li><i>Database</i>: relational data structure (e.g., MySQL, Django, Access, etc.)</li>
-                    </ul>
-                  </li>
-                  </ul>
-                  In addition, use the “Search” field to retrieve resources by:
-                                               <ul>",
-                                               span(
-                                                 `data-toggle` = "tooltip", `data-placement` = "bottom",
-                                                 title = "bone, botanical, burial, eggshell, glass, lithic, organic tools, pottery, sediments, shell
-                   ",
-                                                 HTML("<li><b>Material</b>: using these <a href=>keywords</a>.</li>")),
-                                               span(
-                                                 `data-toggle` = "tooltip", `data-placement` = "bottom",
-                                                 title = "granulometry, ICP-AES, isotopic, LA-ICP-MS, morphometrics, pXRF, radiocarbon, TL/OSL, TOC/TN, U/Th, XRD
-                   ",
-                                                 HTML("<li><b>Measurement and description method</b>: using these <a href=>keywords</a>.</li>")),
+      Use <b>column filters</b> to retrieve resources by:
+     <ul>
+        <li> <b>Scope</b>:
+          <ul>
+            <li><i>Single site</i>: the resource regards one archaeological site, represented as a point on the map.</li>
+            <li><i>Multi sites</i>: the resource regards several archaeological sites, represented as surfaces on the map.</li>
+          </ul>
+        </li>
+        <li> <b>Access mode</b>:
+          <ul>
+            <li><i>Open</i>: the resource can be directly accessed using the provided link.</li>
+            <li><i>Restricted</i>: access to the resource must be requested using the provided link.</li>
+            <li><i>Embargoed</i>: access to the resource will be possible in the future.</li>
+          </ul>
+        </li>
+        <li> <b>Data structure</b>:
+          <ul>
+            <li><i>Dataset</i>: flat data structure (e.g., CSV, XLSX, PDF formats, etc.).</li>
+            <li><i>Database</i>: relational data structure (e.g., MySQL, Django, Access, etc.)</li>
+          </ul>
+        </li>
+        </ul>
+          
+        Use the <b>Search field</b>  to retrieve resources by:
+                   <ul>",
+                   span(
+                     `data-toggle` = "tooltip", `data-placement` = "bottom",
+                     title = "bone, botanical, burial, eggshell, ethnography, glass, lithic, organic tools, pottery, sediments, shell
+",
+                     HTML("<li><b>Material</b>: using these <a href=>keywords</a>.</li>")),
+                   span(
+                     `data-toggle` = "tooltip", `data-placement` = "bottom",
+                     title = "granulometry, ICP-AES, isotopic, LA-ICP-MS, morphometrics, pXRF, radiocarbon, TL/OSL, TOC/TN, U/Th, XRD
+",
+                     HTML("<li><b>Measurement and description method</b>: using these <a href=>keywords</a>.</li>")),
                   "
                      </ul>    
-                    </p>
-                    <p>
-                      The data and app code source are available on <a href=https://github.com/sebastien-plutniak/open-archeocsean target=_blank><i>github</i></a>.
                     </p>
                     </div>" )) # end html
                                   ), # end div
@@ -117,7 +123,9 @@ ui <- shinyUI(
                                   column(1),
                                   column(10,  align = "center",
                                          br(),
-                                         "Click on a line to zoom the map on this resource",
+                                         "Click on a line to zoom the map on the corresponding resource.",
+                                         br(),
+                                         HTML("Click on the <img height=12px src=icon-doc.jpg> symbol to access the related documentation."),
                                          DT::dataTableOutput("table",  width="100%"), # : table output ----
                                          br(),
                                          downloadButton("download.table", "Download the data (CSV)"),
@@ -146,12 +154,12 @@ ui <- shinyUI(
                                          tags$div(HTML("
                              <h2>Credits</h2>
                               <ul>
-                              <li> The <i>open-archeOcsean</i> dataset and application are developed and maintained by <b>Sébastien Plutniak</b> (CNRS).</li>
-                              <li> It benefited from the help of: Ethan Cochrane, Kristine Hardy, Mathieu Leclerc, Anna Pineda </li>
+                              <li> The <i>Open-archeOcsean</i> dataset and application are developed and maintained by <b>Sébastien Plutniak</b> (CNRS).</li>
+                              <li> It benefited from the help of: Ethan Cochrane, Kristine Hardy, Mathieu Leclerc, Anna Pineda, Tim Thomas, Monika Karmin, Ruly Fauzi. </li>
                 </ul>
                  <h2>Support</h2>
                  <div style='text-align:left'>
-                    <b> <i>open-archeOcsean</i></b>
+                    <b> <i>Open-archeOcsean</i></b>
                     <br><br>
                     <table> 
                       <tr>
@@ -160,6 +168,10 @@ ui <- shinyUI(
                         <td>  is hosted by:  <br> <br> <a href=https://www.huma-num.fr/ target=_blank><img height='60px' src=logo-humanum.jpg></a></td>
                       </tr>
                     </table> 
+                    <br>
+                <p>    
+                   This project has received funding from the European Union’s Horizon 2020 research and innovation programme under the Marie Skłodowska-Curie grant agreement No <a href=https://cordis.europa.eu/project/id/873207 target_blank>873207</a>.
+                </p>
                 </div> 
                ") # end HTML
                                          ) # end div
@@ -182,8 +194,10 @@ server <- function(input, output, session) {
   sites <- data
   
   ## adapt negative longitude ----
-  sites[which(sites$bbox.lon1 < 0), ]$bbox.lon1 <- 180 + (180 + sites[which(sites$bbox.lon1 < 0), ]$bbox.lon1)
-  sites[which(sites$bbox.lon2 < 0), ]$bbox.lon2 <- 180 + (180 + sites[which(sites$bbox.lon2 < 0), ]$bbox.lon2)
+  idx <- which(sites$bbox.lon1 < 0 & sites$bbox.lon2 < 0)
+  sites[idx, ]$bbox.lon1 <- 180 + (180 + sites[idx, ]$bbox.lon1)
+  idx <- which(sites$bbox.lon2 < 0)
+  sites[idx, ]$bbox.lon2 <- 180 + (180 + sites[idx, ]$bbox.lon2)
   sites[which(sites$lon < 0), ]$lon <- 180 + (180 + sites[which(sites$lon < 0), ]$lon)
   
   ## area ----
@@ -289,11 +303,51 @@ server <- function(input, output, session) {
   
   
   # Table output ----
-  output$table <- DT::renderDataTable({ 
+  tab <- eventReactive(input$map_draw_new_feature,{
     
-    tab <- sites[ , c("resource.name",   "five.stars.score.label",  "scope", "access", "pid", "type", "date_publication", "date_last.update", "licence", "material.keywords", "measurement.keywords") ]
-    colnames(tab) <- c("Name (hover for description)",  "5 stars",  "Scope", "Access", "Identifier", "Structure", "Publication date", "Last update date",  "Licence",  "material.keywords", "measurement.keywords")
-    
+    if(! is.null(input$map_draw_new_feature)){
+      # browser()
+      
+      lon <- c(input$map_draw_new_feature$geometry$coordinates[[1]][[1]][[1]],
+               input$map_draw_new_feature$geometry$coordinates[[1]][[2]][[1]],
+               input$map_draw_new_feature$geometry$coordinates[[1]][[3]][[1]],
+               input$map_draw_new_feature$geometry$coordinates[[1]][[4]][[1]])
+      
+      lat <- c(input$map_draw_new_feature$geometry$coordinates[[1]][[1]][[2]],
+               input$map_draw_new_feature$geometry$coordinates[[1]][[2]][[2]],
+               input$map_draw_new_feature$geometry$coordinates[[1]][[3]][[2]],
+               input$map_draw_new_feature$geometry$coordinates[[1]][[4]][[2]])
+      
+      min.lon <- min(lon)
+      max.lon <- max(lon)
+      min.lat <- min(lat) + 90 # convert to positive values only
+      max.lat <- max(lat) + 90
+      
+      # selected points:
+      idx.points <- (sites$lon >= min.lon &  sites$lon <=  max.lon)    &    (sites$lat >= min.lat &  sites$lat <=  max.lat)
+      idx.points <- which(idx.points)
+      
+      # select surfaces:
+      ## area with no horizontal overlap with the selected area: 
+      horiz.overlap <- (sites$bbox.lon1 < min.lon & sites$bbox.lon2 < min.lon) | 
+        (sites$bbox.lon1 > max.lon & sites$bbox.lon2 > max.lon)
+      ## area with no vertical overlap with the selected area: 
+      vert.overlap  <- (sites$bbox.lat1 + 90 > max.lat & sites$bbox.lat2 + 90 > max.lat) | 
+        (sites$bbox.lat1 + 90 < min.lat & sites$bbox.lat2 + 90 < min.lat)
+      
+      idx.surf <- which( ! horiz.overlap & !vert.overlap)
+      
+      # subset
+      sites <- sites[c(idx.surf, idx.points), ]
+    }
+      
+      tab <- sites[ , c("resource.name",   "five.stars.score.label",  "scope", "access", "pid", "type", "date_publication", "date_last.update", "licence", "material.keywords", "measurement.keywords") ]
+      colnames(tab) <- c("Name (hover for description)",  "5 stars",  "Scope", "Access", "Identifier", "Structure", "Publication date", "Last update date",  "Licence",  "material.keywords", "measurement.keywords")
+      tab
+  }, ignoreInit = F, ignoreNULL = FALSE)
+  
+ output$table <- DT::renderDataTable({
+    tab <- tab()
     DT::datatable(tab, rownames = FALSE,  escape = FALSE, selection = 'single',
                   filter = "top",
                   options = list(lengthMenu = c(15, 30, 50, 100), pageLength = 15,
@@ -317,7 +371,10 @@ server <- function(input, output, session) {
       leaflet::setView(lng = 180, lat = 0, zoom = 2)  %>%
       leaflet::addWMSTiles(baseUrl = 'https://ows.terrestris.de/osm/service?',
                   layers = "TOPO-WMS",
+                  options =  WMSTileOptions(minZoom = 2),
                   attribution = '&copy; <a href=https://www.openstreetmap.org/copyright>OpenStreetMap</a> contributors')  %>%
+      # leaflet::addProviderTiles("Esri.OceanBasemap", group = "Ocean Basemap",
+      #                           providerTileOptions(minZoom=2) )   %>%
       # addProviderTiles(providers$Esri.WorldPhysical) %>%
       # addProviderTiles(providers$OpenTopoMap) %>%   #Esri.WorldTerrain
       #  
@@ -351,7 +408,6 @@ server <- function(input, output, session) {
                     options = pathOptions(clickable = TRUE, interactive = TRUE),
                     popupOptions = popupOptions(closeOnClick = TRUE)
       )
-    # }
     
       ## add points ####
     map %>% leaflet::addCircleMarkers(data = sites[ ! is.na(sites$lat), ],
@@ -366,7 +422,10 @@ server <- function(input, output, session) {
                              popupOptions = popupOptions(closeOnClick = TRUE),
                              clusterOptions = markerClusterOptions(
                                spiderfyDistanceMultiplier = 1.5
-                                                                   )) 
+                                                                   )) %>% 
+        leaflet.extras::addDrawToolbar(targetGroup = 'draw',
+                                       polylineOptions= FALSE, polygonOptions=FALSE, circleOptions = FALSE,
+                                       markerOptions = FALSE, circleMarkerOptions=FALSE, singleFeature = TRUE)
   })
   
   
@@ -426,7 +485,11 @@ server <- function(input, output, session) {
                        fillOpacity = ~fillOpacity,
                        clusterOptions = markerClusterOptions(spiderfyDistanceMultiplier=1.5),
                        opacity = 0.99
-                       )
+                       ) %>% 
+      leaflet.extras::addDrawToolbar(targetGroup = 'draw', 
+                     polylineOptions= FALSE, polygonOptions=FALSE, circleOptions = FALSE,
+                     markerOptions = FALSE, circleMarkerOptions=FALSE, 
+                     singleFeature = TRUE)      
   })
   
  
