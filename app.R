@@ -71,7 +71,21 @@ ui <- shinyUI(
       </p>
 
     <h3>Table exploration</h3>
-    <p>
+      <p>
+      Use the <b>Search field</b>  to retrieve resources by:
+                   <ul>",
+                                               span(
+                                                 `data-toggle` = "tooltip", `data-placement` = "bottom",
+                                                 title = "bone, botanical, burial, eggshell, ethnography, glass, lithic, organic tools, physical space, pottery, sediments, shell
+",
+                                                 HTML("<li><b>Material</b>:  <a href=>keywords</a>.</li>")),
+                                               span(
+                                                 `data-toggle` = "tooltip", `data-placement` = "bottom",
+                                                 title = "granulometry, ICP-AES, isotopic, LA-ICP-MS, morphometrics, pXRF, radiocarbon, TL/OSL, TOC/TN, U/Th, XRD
+",
+                                                 HTML("<li><b>Measurement and description method</b>:  <a href=>keywords</a>.</li>")),
+                                               "
+                     </ul>
       Use <b>column filters</b> to retrieve resources by:
      <ul>
         <li> <b>Scope</b>:
@@ -87,29 +101,9 @@ ui <- shinyUI(
             <li><i>Embargoed</i>: access to the resource will be possible in the future.</li>
           </ul>
         </li>
-        <li> <b>Data structure</b>:
-          <ul>
-            <li><i>Dataset</i>: flat data structure (e.g., CSV, XLSX, PDF formats, etc.).</li>
-            <li><i>Database</i>: relational data structure (e.g., MySQL, Django, Access, etc.)</li>
-          </ul>
-        </li>
+        <li> <b>File format</b>: available to retrieve the data.</li>
         </ul>
-          
-        Use the <b>Search field</b>  to retrieve resources by:
-                   <ul>",
-                   span(
-                     `data-toggle` = "tooltip", `data-placement` = "bottom",
-                     title = "bone, botanical, burial, eggshell, ethnography, glass, lithic, organic tools, pottery, sediments, shell
-",
-                     HTML("<li><b>Material</b>: using these <a href=>keywords</a>.</li>")),
-                   span(
-                     `data-toggle` = "tooltip", `data-placement` = "bottom",
-                     title = "granulometry, ICP-AES, isotopic, LA-ICP-MS, morphometrics, pXRF, radiocarbon, TL/OSL, TOC/TN, U/Th, XRD
-",
-                     HTML("<li><b>Measurement and description method</b>: using these <a href=>keywords</a>.</li>")),
-                  "
-                     </ul>    
-                    </p>
+      </p>
                     </div>" )) # end html
                                   ), # end div
                            ), #end column
@@ -193,7 +187,7 @@ server <- function(input, output, session) {
   data <- read.csv("data/open-archeocsean-data.csv")
   sites <- data
   
-  ## adapt negative longitude ----
+  ## convert longitudes in positive values for mapping purpose ----
   idx <- which(sites$bbox.lon1 < 0 & sites$bbox.lon2 < 0)
   sites[idx, ]$bbox.lon1 <- 180 + (180 + sites[idx, ]$bbox.lon1)
   idx <- which(sites$bbox.lon2 < 0)
@@ -201,28 +195,51 @@ server <- function(input, output, session) {
   sites[which(sites$lon < 0), ]$lon <- 180 + (180 + sites[which(sites$lon < 0), ]$lon)
   
   ## area ----
-  compute.area <- function(lon1, lon2, lat1, lat2){
-    lon1 <- as.numeric(lon1)
-    lon2 <- as.numeric(lon2)
-    lat1 <- as.numeric(lat1)
-    lat2 <- as.numeric(lat2)
-    lon.max <- sort(c(lon1, lon2))[1]
-    lon.min <- sort(c(lon1, lon2))[2]
-    lat.max <- sort(c(lat1, lat2))[1]
-    lat.min <- sort(c(lat1, lat2))[2]
-    
-    (lon.max - lon.min) * (lat.max - lat.min)
-  }
-  sites$area <- apply(sites, 1, function(x) compute.area(
-                                           lon1 = x[which(names(sites) == "bbox.lon1")],
-                                           lon2 = x[which(names(sites) == "bbox.lon2")], 
-                                           lat1 = x[which(names(sites) == "bbox.lat1")],
-                                           lat2 = x[which(names(sites) == "bbox.lat2")])
-        )
+  # compute.area <- function(lon1, lon2, lat1, lat2){
+  #   lon1 <- as.numeric(lon1)
+  #   lon2 <- as.numeric(lon2)
+  #   lat1 <- as.numeric(lat1)
+  #   lat2 <- as.numeric(lat2)
+  #   lon.max <- sort(c(lon1, lon2))[1]
+  #   lon.min <- sort(c(lon1, lon2))[2]
+  #   lat.max <- sort(c(lat1, lat2))[1]
+  #   lat.min <- sort(c(lat1, lat2))[2]
+  #   
+  #   (lon.max - lon.min) * (lat.max - lat.min)
+  # }
+  # sites$area <- apply(sites, 1, function(x) compute.area(
+  #                                          lon1 = x[which(names(sites) == "bbox.lon1")],
+  #                                          lon2 = x[which(names(sites) == "bbox.lon2")], 
+  #                                          lat1 = x[which(names(sites) == "bbox.lat1")],
+  #                                          lat2 = x[which(names(sites) == "bbox.lat2")])
+        # )
+  
   # areaPolygon
   
-  # sites$area.rank <- order(sites$area)  # todo convert lat/lon en surface
-  # sites[is.na(sites$bbox.lon1), ]$area.rank <- NA
+  area.km2 <- function(lon1, lat1, lon2, lat2){
+    coords <- as.numeric(c(lon1, lon2, lat1, lat2)) * pi / 180 # convert to radian
+    res <- 6378 ^ 2 * (sin(coords[3]) - sin(coords[4])) * (coords[1] - coords[2]) # earth radius: 6378137 m
+    abs(res) # / 1000000
+  }
+  
+  sites$area <- apply(sites, 1, function(x) 
+    area.km2(
+      lon1 = x[which(names(sites) == "bbox.lon1")],
+      lat1 = x[which(names(sites) == "bbox.lat1")],
+      lon2 = x[which(names(sites) == "bbox.lon2")],
+      lat2 = x[which(names(sites) == "bbox.lat2")]
+    )
+  )
+  
+  # sites$area3 <- apply(sites, 1, function(x) {
+  #     pp <- rbind(c(x[which(names(sites) == "bbox.lon1")],  x[which(names(sites) == "bbox.lat1")]),
+  #                 c(x[which(names(sites) == "bbox.lon2")],  x[which(names(sites) == "bbox.lat1")]),
+  #                 c(x[which(names(sites) == "bbox.lon2")],  x[which(names(sites) == "bbox.lat2")]),
+  #                 c(x[which(names(sites) == "bbox.lon1")],  x[which(names(sites) == "bbox.lat2")]))
+  #     geosphere::areaPolygon(pp) / 1000000
+  #     }
+  #   )
+  
   
   ## resource name and link ----
   sites$resource.name <- paste0("<a href=", sites$download_url, " title='", sites$description, "' target=_blank>", sites$name, "</a> ",
@@ -283,7 +300,7 @@ server <- function(input, output, session) {
   sites$access <- factor(sites$access)
   sites$scope <- factor(sites$scope)
   sites$licence <- factor(sites$licence)
-  sites$type <- factor(sites$type)
+  sites$file.format <- factor(sites$file.format)
   sites$storage <- factor(sites$storage)
   
   
@@ -305,8 +322,7 @@ server <- function(input, output, session) {
   # Table output ----
   tab <- eventReactive(input$map_draw_new_feature,{
     
-    if(! is.null(input$map_draw_new_feature)){
-      # browser()
+    if(! is.null(input$map_draw_new_feature)){  ## rectangle selection----
       
       lon <- c(input$map_draw_new_feature$geometry$coordinates[[1]][[1]][[1]],
                input$map_draw_new_feature$geometry$coordinates[[1]][[2]][[1]],
@@ -341,8 +357,8 @@ server <- function(input, output, session) {
       sites <- sites[c(idx.surf, idx.points), ]
     }
       
-      tab <- sites[ , c("resource.name",   "five.stars.score.label",  "scope", "access", "pid", "type", "date_publication", "date_last.update", "licence", "material.keywords", "measurement.keywords") ]
-      colnames(tab) <- c("Name (hover for description)",  "5 stars",  "Scope", "Access", "Identifier", "Structure", "Publication date", "Last update date",  "Licence",  "material.keywords", "measurement.keywords")
+      tab <- sites[ , c("resource.name",   "five.stars.score.label",  "scope", "access", "pid", "file.format", "date_publication", "date_last.update", "licence", "material.keywords", "measurement.keywords") ]
+      colnames(tab) <- c("Name (hover for description)",  "5 stars",  "Scope", "Access", "Identifier", "Format", "Publication date", "Last update date",  "Licence",  "material.keywords", "measurement.keywords")
       tab
   }, ignoreInit = F, ignoreNULL = FALSE)
   
@@ -369,7 +385,7 @@ server <- function(input, output, session) {
     map.base <-
       leaflet::leaflet() %>%  
       leaflet::setView(lng = 180, lat = 0, zoom = 2)  %>%
-      leaflet::addWMSTiles(baseUrl = 'https://ows.terrestris.de/osm/service?',
+      leaflet::addWMSTiles(baseUrl = 'https://ows.terrestris.de/osm/service?',   ## WMS ----
                   layers = "TOPO-WMS",
                   options =  WMSTileOptions(minZoom = 2),
                   attribution = '&copy; <a href=https://www.openstreetmap.org/copyright>OpenStreetMap</a> contributors')  %>%
@@ -385,15 +401,16 @@ server <- function(input, output, session) {
                 title = "Access",
                 colors = access.color,
                 labels = access.lvl,
-                opacity = 0.8)
+                opacity = 0.8) 
   
   surfaces <- sites[ ! is.na(sites$bbox.lon1), ]
   surfaces <- surfaces[order(abs(surfaces$area), decreasing = TRUE), ]
   surfaces$fillOpacity <- 0.1
   
-  output$map <- renderLeaflet({ ## render map ----
-      map <- map.base %>%  ## add surfaces ####
-      leaflet::addRectangles(data = surfaces,
+  
+  output$map <- renderLeaflet({ # Render map ----
+    map.base %>% 
+      leaflet::addRectangles(data = surfaces,                   ## add surfaces----
                     lng1 = ~bbox.lon1,
                     lat1 = ~bbox.lat1,
                     lng2 = ~bbox.lon2,
@@ -406,11 +423,8 @@ server <- function(input, output, session) {
                     weight = .5, 
                     label = ~name,
                     options = pathOptions(clickable = TRUE, interactive = TRUE),
-                    popupOptions = popupOptions(closeOnClick = TRUE)
-      )
-    
-      ## add points ####
-    map %>% leaflet::addCircleMarkers(data = sites[ ! is.na(sites$lat), ],
+                    popupOptions = popupOptions(closeOnClick = TRUE)) %>% 
+        leaflet::addCircleMarkers(data = sites[ ! is.na(sites$lat), ],  ## add points ----
                              ~lon, ~lat,
                              popup = ~popup, layerId = ~id,
                              label = ~name,
@@ -422,14 +436,15 @@ server <- function(input, output, session) {
                              popupOptions = popupOptions(closeOnClick = TRUE),
                              clusterOptions = markerClusterOptions(
                                spiderfyDistanceMultiplier = 1.5
-                                                                   )) %>% 
-        leaflet.extras::addDrawToolbar(targetGroup = 'draw',
+                               )
+                             ) %>% 
+        leaflet.extras::addDrawToolbar(targetGroup = 'draw',             ## add draw tool ----
                                        polylineOptions= FALSE, polygonOptions=FALSE, circleOptions = FALSE,
                                        markerOptions = FALSE, circleMarkerOptions=FALSE, singleFeature = TRUE)
   })
   
   
-  ## map update  ----
+  # Map update  ----
   observeEvent(input$table_rows_selected, {
     
     row <- input$table_rows_selected
