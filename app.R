@@ -1,4 +1,4 @@
-remotes::install_github("sebastien-plutniak/spatialCatalogueViewer")
+remotes::install_github("sebastien-plutniak/spatialCatalogueViewer", upgrade = "never")
 
 # data preparation  ----
 data <- read.csv("data/open-archeocsean-data.csv")
@@ -113,12 +113,9 @@ text.left <- "<div style=width:90%;, align=left>
       <i>Open-archeOcsean</i> is a curated catalogue of open-source data sets regarding the archaeology of the Pacific and Southeast Asia region, developped in the context of the  <a href=https://www.ocsean.eu  target=_blank><i>Ocsean. Oceanic and Southeast Asian Navigators</i></a> project. 
     The data and app code source are available on <a href=https://github.com/sebastien-plutniak/open-archeocsean target=_blank><i>github</i></a>.
     </p>
-    <h3>Map exploration</h3>
+    <h3>Coverage</h3>
       <p>
-        Draw a rectangle to retrieve the datasets related to the selected area.  
-      </p>
-      <p>
-        Note: <i>Open-archeOcsean</i>'s area of interest is defined between lon = [91.1426, 257.6953], and lat = [45.9511, -52.3756]. The coverage of data sets exceeding this surface could have been reduced to the part fitting within this area of interest.
+        <i>Open-archeOcsean</i>'s area of interest is defined between lon = [91.1426, 257.6953], and lat = [45.9511, -52.3756]. The coverage of data sets exceeding this surface could have been reduced to the part fitting within this area of interest.
       </p>
 
     <h3>Table exploration</h3>
@@ -147,7 +144,7 @@ text.left <- "<div style=width:90%;, align=left>
             <li><i>Embargoed</i>: access to the resource will be possible in the future.</li>
           </ul>
         </li>
-        <li> <b>File format</b>: available to retrieve the data.</li>
+        <li> <b>File format</b>: publication format of the dataset.</li>
         </ul>
       </p>
       </div>"
