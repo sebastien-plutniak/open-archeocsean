@@ -1,74 +1,82 @@
 remotes::install_github("sebastien-plutniak/spatialCatalogueViewer", upgrade = "never")
 
-# data preparation  ----
-data <- read.csv("data/open-archeocsean-data.csv")
-
-data$resource.name <- data$name
-
-## resource name and link ----
-data$resource.name.html <- paste0("<a href=", data$download_url, " title='", data$description, "' target=_blank>", data$name, "</a> ",
-                              "<a href=", data$info_url, " title='Click to access related documentation.' target=_blank><img height=12px src=icon-doc.jpg></a>")
-
-## PID ----
-data$pid <- "url"
-data[grep("doi", data$download_url), ]$pid <- "doi"
-data[grep("hdl", data$download_url), ]$pid <- "hdl"
-data$pid <- factor(data$pid )
-
-## popup ----
-data$tab.link <- paste0("<a href=", data$download_url, " title='Click to access this resource' target=_blank>", data$name, "</a>")
-data$popup <- paste0("<b>", data$tab.link, "</b><br>", 
-                      data$description, ".<br>",
-                      "<b>Licence:</b> ", data$licence, "<br>",
-                      "<b>Access:</b> ", data$access)
-
-legend.labels <- c("open", "embargoed", "failing", "restricted")
-legend.colors <- c("darkgreen", "purple", "yellow", "red") 
 
 
-## periods -----
-# data$period <-  data$period1
-# idx <- data$period2 != ""
-# data[idx, ]$period <- paste0(data[idx, ]$period1,
-#                               " → ", data[idx, ]$period2)
+try(archeocsean.df <- read.csv("data/open-archeocsean-data_formated.csv", check.names=FALSE), silent=TRUE)
 
-## 5 stars scale ----
-five.stars.score <- function(item, score){
-  score <- as.numeric(score)
-  res <- ""
-  if(! is.na(score)){
-    res <- paste0(c(
-      "<div title='Score:", score, "'>",
-      paste0(rep("<font  color='gold'>★</font>", score), collapse = ""),
-      paste0(rep("<font color='LightGray'>★</font>", 5 - score), collapse = ""),
-      "</div>"
-    ),
-    collapse = "")
+if( ! exists("archeocsean.df")){
+  # data preparation  ----
+  archeocsean.df <- read.csv("data/open-archeocsean-data.csv")
+  archeocsean.df$resource.name <- archeocsean.df$name
+  
+  ## resource name and link ----
+  archeocsean.df$resource.name.html <- paste0("<a href=", archeocsean.df$download_url, " title='", archeocsean.df$description, "' target=_blank>", archeocsean.df$name, "</a> ",
+                                "<a href=", archeocsean.df$info_url, " title='Click to access related documentation.' target=_blank><img height=12px src=icon-doc.jpg></a>")
+  
+  ## PID ----
+  archeocsean.df$pid <- "url"
+  archeocsean.df[grep("doi", archeocsean.df$download_url), ]$pid <- "doi"
+  archeocsean.df[grep("hdl", archeocsean.df$download_url), ]$pid <- "hdl"
+  archeocsean.df$pid <- factor(archeocsean.df$pid)
+  
+  ## popup ----
+  archeocsean.df$tab.link <- paste0("<a href=", archeocsean.df$download_url, " title='Click to access this resource' target=_blank>", archeocsean.df$name, "</a>")
+  archeocsean.df$popup <- paste0("<b>", archeocsean.df$tab.link, "</b><br>", 
+                        archeocsean.df$description, ".<br>",
+                        "<b>Licence:</b> ", archeocsean.df$licence, "<br>",
+                        "<b>Access:</b> ", archeocsean.df$access)
+  
+  ## periods -----
+  # archeocsean.df$period <-  archeocsean.df$period1
+  # idx <- archeocsean.df$period2 != ""
+  # archeocsean.df[idx, ]$period <- paste0(archeocsean.df[idx, ]$period1,
+  #                               " → ", archeocsean.df[idx, ]$period2)
+  
+  ## 5 stars scale ----
+  five.stars.score <- function(item, score){
+    score <- as.numeric(score)
+    res <- ""
+    if(! is.na(score)){
+      res <- paste0(c(
+        "<div title='Score:", score, "'>",
+        paste0(rep("<font  color='gold'>★</font>", score), collapse = ""),
+        paste0(rep("<font color='LightGray'>★</font>", 5 - score), collapse = ""),
+        "</div>"
+      ),
+      collapse = "")
+    }
+    res  
   }
-  res  
+  
+  archeocsean.df$five.stars.score.label <- apply(archeocsean.df, 1, function(x) 
+    five.stars.score(item = x, score = x[which(colnames(archeocsean.df) == "five.stars.score")] ))
+  
+  
+  archeocsean.df$access <- factor(archeocsean.df$access)
+  archeocsean.df$scope <- factor(archeocsean.df$scope)
+  archeocsean.df$licence <- factor(archeocsean.df$licence)
+  archeocsean.df$file.format <- factor(archeocsean.df$file.format)
+  archeocsean.df$storage <- factor(archeocsean.df$storage)
+  
+  ## material & measurements ---- 
+  idx <- grep("material", names(archeocsean.df))
+  archeocsean.df$material.keywords <- apply(archeocsean.df[, idx], 1, paste0, collapse = " ")
+  
+  idx <- grep("measurement_type", names(archeocsean.df))
+  archeocsean.df$measurement.keywords <- apply(archeocsean.df[, idx], 1, paste0, collapse = " ")
+  
+  
+  archeocsean.df <- archeocsean.df[ , c("lon", "lat", "bbox.lon1", "bbox.lat1", "bbox.lon2", "bbox.lat2", "resource.name", "popup",  "resource.name.html", "five.stars.score.label",  "scope", "access", "pid", "file.format", "date_publication", "date_last.update", "licence", "material.keywords", "measurement.keywords") ]
+  colnames(archeocsean.df) <- c("lon", "lat", "bbox.lon1", "bbox.lat1", "bbox.lon2", "bbox.lat2", "resource.name","popup",  "Name (hover for description)",  "5 stars",  "Scope", "Access", "Identifier", "Format", "Publication date", "Last update date",  "Licence",  "material.keywords", "measurement.keywords")
+  
+  write.csv(archeocsean.df, "data/open-archeocsean-data_formated.csv", row.names = FALSE)
 }
 
-data$five.stars.score.label <- apply(data, 1, function(x) 
-  five.stars.score(item = x, score = x[which(colnames(data) == "five.stars.score")] ))
-
-
-data$access <- factor(data$access)
-data$scope <- factor(data$scope)
-data$licence <- factor(data$licence)
-data$file.format <- factor(data$file.format)
-data$storage <- factor(data$storage)
-
-## material & measurements ---- 
-idx <- grep("material", names(data))
-data$material.keywords <- apply(data[, idx], 1, paste0, collapse = " ")
-
-idx <- grep("measurement_type", names(data))
-data$measurement.keywords <- apply(data[, idx], 1, paste0, collapse = " ")
-
-
-data <- data[ , c("lon", "lat", "bbox.lon1", "bbox.lat1", "bbox.lon2", "bbox.lat2", "resource.name", "popup",  "resource.name.html", "five.stars.score.label",  "scope", "access", "pid", "file.format", "date_publication", "date_last.update", "licence", "material.keywords", "measurement.keywords") ]
-colnames(data) <- c("lon", "lat", "bbox.lon1", "bbox.lat1", "bbox.lon2", "bbox.lat2", "resource.name","popup",  "Name (hover for description)",  "5 stars",  "Scope", "Access", "Identifier", "Format", "Publication date", "Last update date",  "Licence",  "material.keywords", "measurement.keywords")
-
+archeocsean.df$Identifier <- factor(archeocsean.df$Identifier)
+archeocsean.df$Access <- factor(archeocsean.df$Access)
+archeocsean.df$Scope <- factor(archeocsean.df$Scope)
+archeocsean.df$Licence <- factor(archeocsean.df$Licence)
+archeocsean.df$Format <- factor(archeocsean.df$Format)
 
 
 # css ----
@@ -110,20 +118,16 @@ text.title <- "<h1>
 text.left <- "<div style=width:90%;, align=left>
              <h2>Presentation</h2>
     <p>
-      <i>Open-archeOcsean</i> is a curated catalogue of open-source data sets regarding the archaeology of the Pacific and Southeast Asia region, developped in the context of the  <a href=https://www.ocsean.eu  target=_blank><i>Ocsean. Oceanic and Southeast Asian Navigators</i></a> project. 
-    The data and app code source are available on <a href=https://github.com/sebastien-plutniak/open-archeocsean target=_blank><i>github</i></a>.
+      <i>Open-archeOcsean</i> is a curated catalogue of open-source data sets regarding the archaeology of the Pacific and Southeast Asia regions.
+      It was initiated in the context of the <a href=https://www.ocsean.eu  target=_blank><i>Ocsean. Oceanic and Southeast Asian Navigators</i></a> project. 
+    The data and app code source are available on <a href=https://github.com/sebastien-plutniak/open-archeocsean target=_blank><i>github</i></a> and archived on <a href=https://doi.org/10.5281/zenodo.16812839 target=_blank><i>Zenodo</i></a>.
     </p>
-    <h3>Coverage</h3>
-      <p>
-        <i>Open-archeOcsean</i>'s area of interest is defined between lon = [91.1426, 257.6953], and lat = [45.9511, -52.3756]. The coverage of data sets exceeding this surface could have been reduced to the part fitting within this area of interest.
-      </p>
-
     <h3>Table exploration</h3>
       <p>
       Use the <b>Search field</b>  to retrieve resources by:
                    <ul>
                       <li><b>Material</b>: 
-                        <span data-toggle='tooltip' data-placement='bottom' title='bone, botanical, burial, eggshell, ethnography, glass, lithic, organic tools, physical space, pottery, sediments, shell'>
+                        <span data-toggle='tooltip' data-placement='bottom' title='bone, botanical, burial, eggshell, ethnography, excavation documents, glass, lithic, organic tools, physical space, pottery, rice, sea level, sediments, shell'>
                       <a href=>keywords</a></span>.</li>
                       <li><b>Measurement and description method</b>:  
                       <span data-toggle='tooltip' data-placement='bottom' title='granulometry, ICP-AES, isotopic, LA-ICP-MS, morphometrics, pXRF, radiocarbon, TL/OSL, TOC/TN, U/Th, XRD'>
@@ -131,6 +135,8 @@ text.left <- "<div style=width:90%;, align=left>
                     </ul>
       Use <b>column filters</b> to retrieve resources by:
      <ul>
+     
+        <li> <b>5-stars</b> score: the <a href=https://5stardata.info/ target=_blank>5-stars</a> linked open data score reflects how well data is integrated into the Web.</li>
         <li> <b>Scope</b>:
           <ul>
             <li><i>Single site</i>: the resource regards one archaeological site, represented as a point on the map.</li>
@@ -141,7 +147,7 @@ text.left <- "<div style=width:90%;, align=left>
           <ul>
             <li><i>Open</i>: the resource can be directly accessed using the provided link.</li>
             <li><i>Restricted</i>: access to the resource must be requested using the provided link.</li>
-            <li><i>Embargoed</i>: access to the resource will be possible in the future.</li>
+            <li><i>Embargoed</i>: access to the resource will be possible at a stated date in the future.</li>
           </ul>
         </li>
         <li> <b>File format</b>: publication format of the dataset.</li>
@@ -156,13 +162,34 @@ contribute.tab <- "<h2>Contact</h2>
                     <ul>
                      <li>either by email: sebastien.plutniak_at_cnrs.fr</li>
                      <li>or by creating an 'issue' or a 'pull request' on the <a href=https://github.com/sebastien-plutniak/open-archeocsean target=_blank><i>github</i></a> repository. </li>
-                    </ul>"
+                    </ul>
+                  <h2>What is included?</h2>
+                  <h3>Spatial coverage</h3>
+                    <p>
+                      <i>Open-archeOcsean</i>'s area of interest spans between longitude = [91.1426, 257.6953] and latitude = [45.9511, -52.3756]. Note that the represented coverage of data sets exceeding this surface could have been reduced to their part fitting within this area of interest.
+                    </p>
+                  <h3>Open data</h3>
+                    <p>
+                      To be referenced in <i>Open-archeOcsean</i>, a resource must at least meet the following requirements:
+                      <ul>
+                        <li>be accessible online (possibly: at a determined date in the future for embargoed resources, under the condition of a free registration open to everyone), </li>
+                        <li>be downloadable by users.</li>
+                      </ul>
+                       Resources which tend to comply with <a href=https://www.go-fair.org/fair-principles/ target=_blank>FAIR</a> principles are favored. 
+                    </p>
+"
 
 credits.tab <-  "<h2>Credits</h2>
                   <ul>
                      <li> The <i>Open-archeOcsean</i> dataset and application are developed and maintained by <b>Sébastien Plutniak</b> (CNRS).</li>
                      <li> It benefited from the help of: Ethan Cochrane, Kristine Hardy, Mathieu Leclerc, Anna Pineda, Tim Thomas, Monika Karmin, Ruly Fauzi. </li>
                   </ul>
+                   <h2>Citation</h2>
+                    <p>To cite open-archeOcsean</i>, use:
+                      <ul><li>
+                      Plutniak S. 2025. 'open-archeOcsean: an interactive catalogue of open source datasets for the archaeology of the Pacific and Southeast Asia regions (v1.0.0)'. <i>Zenodo</i>, <a href=https://doi.org/10.5281/zenodo.16812839 target=_blank>10.5281/zenodo.16812839</a>.
+                      </li></ul>
+                    </p>
                    <h2>Support</h2>
                    <div style='text-align:left'>
                       <b> <i>Open-archeOcsean</i></b>
@@ -180,17 +207,16 @@ credits.tab <-  "<h2>Credits</h2>
                       </p>
                   </div>"
 
-
 # exec spatialCatalogueViewer----
-spatialCatalogueViewer::spatialCatalogueViewer(data = data,   
+spatialCatalogueViewer::spatialCatalogueViewer(data = archeocsean.df,   
                                                text.title = text.title,
                                                text.left = text.left, 
                                                text.bottom = text.bottom,
                                                map.provider = "Esri.WorldPhysical",
                                                map.set.lon = 180, map.set.lat = 0,
                                                map.legend.variable = "Access", 
-                                               map.legend.labels = legend.labels, 
-                                               map.legend.colors = legend.colors,
+                                               map.legend.labels = c("open", "embargoed", "failing", "restricted"), 
+                                               map.legend.colors = c("darkgreen", "purple", "yellow", "red") ,
                                                map.height = 600,
                                                map.area.fill.color = "white",
                                                map.area.fill.opacity = .1,
@@ -200,7 +226,7 @@ spatialCatalogueViewer::spatialCatalogueViewer(data = data,
                                                table.filter = "top", 
                                                table.pageLength = 15,
                                                data.download.button = TRUE,
-                                               tabs.contents = list("Contribute" = contribute.tab, "Contributors & Credits" = credits.tab),
+                                               tabs.contents = list("Contribute" = contribute.tab, "Credits" = credits.tab),
                                                css = css, js = js,
                                                theme = "cerulean") 
 
