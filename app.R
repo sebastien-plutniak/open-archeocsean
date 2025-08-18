@@ -38,7 +38,7 @@ if( ! exists("archeocsean.df")){
     res <- ""
     if(! is.na(score)){
       res <- paste0(c(
-        "<div title='Score:", score, "'>",
+        "<div title='Score: ", score, "'>",
         paste0(rep("<font  color='gold'>★</font>", score), collapse = ""),
         paste0(rep("<font color='LightGray'>★</font>", 5 - score), collapse = ""),
         "</div>"
@@ -127,7 +127,7 @@ text.left <- "<div style=width:90%;, align=left>
       Use the <b>Search field</b>  to retrieve resources by:
                    <ul>
                       <li><b>Material</b>: 
-                        <span data-toggle='tooltip' data-placement='bottom' title='bone, botanical, burial, eggshell, ethnography, excavation documents, glass, lithic, organic tools, physical space, pottery, rice, sea level, sediments, shell'>
+                        <span data-toggle='tooltip' data-placement='bottom' title='bone, botanical, burial, eggshell, ethnography, excavation documents, glass, lithic, organic tools, paleoclimate, physical space, pottery, rice, sea level, sediments, shell'>
                       <a href=>keywords</a></span>.</li>
                       <li><b>Measurement and description method</b>:  
                       <span data-toggle='tooltip' data-placement='bottom' title='granulometry, ICP-AES, isotopic, LA-ICP-MS, morphometrics, pXRF, radiocarbon, TL/OSL, TOC/TN, U/Th, XRD'>
