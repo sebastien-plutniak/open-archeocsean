@@ -17,7 +17,16 @@ This initiative started in the context of the [*OCSEAN*](https://cordis.europa.e
 
 *open-archeOcsean* is powered by the [*spatialCatalogueViewer*](https://github.com/sebastien-plutniak/spatialCatalogueViewer/) application.
 
-# Licenses
 
-The code (R language) is distributed under a GPL-3.0 license.
-The dataset is distributed under a CC-BY4.0 license.
+
+# Terms of Use
+
+The use of the *Open-archeOcsean* catalogue denotes agreement with the following terms:
+
+* *Open-archeOcsean* is provided free of charge and is distributed under open licences:
+    * All metadata and data are made available under the terms of the [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/ target_blank) license.</li>
+    * The software code draws on the [*spatialCatalogueViewer*](https://CRAN.R-project.org/package=spatialCatalogueViewer) R package, which is distibuted under a [GPL-3](https://www.r-project.org/Licenses/GPL-3) license.
+* All content is provided “as is” and the user shall hold the content providers free and harmless in connection with its use of such content.
+* These terms of use are subject to change at any time and without notice, other than through posting the updated Terms of Use on this page.
+
+If you have any questions or comments with respect to *Open-archeOcsean*, or if you are unsure whether your intended use is in line with these Terms of Use, or if you seek permission for a use that does not fall within these Terms of Use, please contact us.
