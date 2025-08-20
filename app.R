@@ -32,6 +32,10 @@ if( ! exists("archeocsean.df")){
   # archeocsean.df[idx, ]$period <- paste0(archeocsean.df[idx, ]$period1,
   #                               " → ", archeocsean.df[idx, ]$period2)
   
+  ## color ----
+  archeocsean.df$fillColor <- as.character(factor(archeocsean.df$access, c("open", "embargoed", "failing", "restricted"),
+                                 labels =  c("darkgreen", "purple", "yellow", "red")))
+  
   ## 5 stars scale ----
   five.stars.score <- function(item, score){
     score <- as.numeric(score)
@@ -66,8 +70,8 @@ if( ! exists("archeocsean.df")){
   archeocsean.df$measurement.keywords <- apply(archeocsean.df[, idx], 1, paste0, collapse = " ")
   
   
-  archeocsean.df <- archeocsean.df[ , c("lon", "lat", "bbox.lon1", "bbox.lat1", "bbox.lon2", "bbox.lat2", "resource.name", "popup",  "resource.name.html", "five.stars.score.label",  "scope", "access", "pid", "file.format", "date_publication", "date_last.update", "licence", "material.keywords", "measurement.keywords") ]
-  colnames(archeocsean.df) <- c("lon", "lat", "bbox.lon1", "bbox.lat1", "bbox.lon2", "bbox.lat2", "resource.name","popup",  "Name (hover for description)",  "5 stars",  "Scope", "Access", "Identifier", "Format", "Publication date", "Last update date",  "Licence",  "material.keywords", "measurement.keywords")
+  archeocsean.df <- archeocsean.df[ , c("lon", "lat", "bbox.lon1", "bbox.lat1", "bbox.lon2", "bbox.lat2", "resource.name", "popup", "fillColor", "resource.name.html", "five.stars.score.label",  "scope", "access", "pid", "file.format", "date_publication", "date_last.update", "licence", "material.keywords", "measurement.keywords") ]
+  colnames(archeocsean.df) <- c("lon", "lat", "bbox.lon1", "bbox.lat1", "bbox.lon2", "bbox.lat2", "resource.name","popup", "fillColor", "Name (hover for description)",  "5 stars",  "Scope", "Access", "Identifier", "Format", "Publication date", "Last update date",  "Licence",  "material.keywords", "measurement.keywords")
   
   write.csv(archeocsean.df, "data/open-archeocsean-data_formated.csv", row.names = FALSE)
 }
@@ -115,6 +119,7 @@ text.title <- "<h1>
              <i><a href=https://github.com/sebastien-plutniak/open-archeocsean target=_blank>Open-archeOcsean</a></i>
               </h1>"
 
+## left----
 text.left <- "<div style=width:90%;, align=left>
              <h2>Presentation</h2>
     <p>
@@ -122,7 +127,7 @@ text.left <- "<div style=width:90%;, align=left>
       This initiative started in the context of the <a href=https://www.ocsean.eu  target=_blank><i>Ocsean. Oceanic and Southeast Asian Navigators</i></a> project. 
     The data and app code source are available on <a href=https://github.com/sebastien-plutniak/open-archeocsean target=_blank><i>github</i></a> and archived on <a href=https://doi.org/10.5281/zenodo.16812839 target=_blank><i>Zenodo</i></a>.
     </p>
-    <h3>Table exploration</h3>
+    <h3>Table Exploration</h3>
       <p>
       Use the <b>Search field</b>  to retrieve resources by:
                    <ul>
@@ -157,49 +162,67 @@ text.left <- "<div style=width:90%;, align=left>
 
 text.bottom <- "Click on the <img height=12px src=icon-doc.jpg> symbol to access the related documentation."
 
+## contribute ----
 contribute.tab <- "<div  style=width:50%;, align=left> 
-                    <h2>Contact</h2>
+                    <h2>How to Contribute?</h2>
                     Contributions are welcome and can be done:
                     <ul>
-                     <li>either by email: sebastien.plutniak_at_cnrs.fr</li>
-                     <li>or by creating an 'issue' or a 'pull request' on the <a href=https://github.com/sebastien-plutniak/open-archeocsean target=_blank><i>github</i></a> repository. </li>
+                     <li> by email: sebastien.plutniak_at_cnrs.fr</li>
+                     <li> by creating an 'issue' or a 'pull request' on the <a href=https://github.com/sebastien-plutniak/open-archeocsean target=_blank><i>github</i></a> repository. </li>
                     </ul>
-                  <h2>What is included?</h2>
-                  <h3>Spatial coverage</h3>
+                  <h2>Catalogue Scope</h2>
+                     <i>Open-archeOcsean</i> lists data resources relevant to the long-term study of human settlement in the Southeast Asia and Pacific regions. 
+                    <h3>Domain</h3>
+                    <p>
+                     Archaeological data is  <i>Open-archeOcsean</i>'s main focus, however paleoenvironmental, geological, and bio-anthropology (excluding molecular studies) data is also considered as far as it contributes to the understanding of long-term human presence in the area of interest.
+                    </p>
+                  <h3>Spatial Coverage</h3>
                     <p>
                       <i>Open-archeOcsean</i>'s area of interest spans between longitude = [91.1426, 257.6953] and latitude = [45.9511, -52.3756]. Note that the represented coverage of data sets exceeding this surface could have been reduced to their part fitting within this area of interest.
                     </p>
-                  <h3>Conditions for inclusion</h3>
+                  <h3>Time Period</h3>
                     <p>
-                      To be referenced in <i>Open-archeOcsean</i>, a resource must at least meet the following requirements:
+                       From the earliest traces of human presence to today. However, note that datasets about recent period (e.g., colonial period) are referenced only if they present an interest for the study of long-term human presence in the region. 
+                    </p>
+                  <h3>Public Availability</h3>
+                    <p>
+                      To be listed in <i>Open-archeOcsean</i>, a resource must at least meet the following requirements:
                       <ul>
-                        <li>be accessible online (possibly: at a determined date in the future for embargoed resources, under the condition of a free registration open to everyone), </li>
+                        <li>be accessible online (possibly: at a determined date in the future for embargoed resources,  or under the condition of a free registration open to everyone), </li>
                         <li>be downloadable by users.</li>
                       </ul>
-                       Resources which tend to comply with <a href=https://www.go-fair.org/fair-principles/ target=_blank>FAIR</a> principles are favored. 
+                       Resources which tend to comply with the <a href=https://www.go-fair.org/fair-principles/ target=_blank>FAIR</a> principles are favored. 
                     </p>
                   </div>
 "
 
+## credits ----
 credits.tab <-  "<div  style=width:50%;, align=left> 
                 <h2>Credits </h2>
                   <ul>
                      <li> The <i>Open-archeOcsean</i> dataset and application are developed and maintained by <b>Sébastien Plutniak</b> (CNRS).</li>
-                     <li> It benefited from the help of: Ethan Cochrane, Kristine Hardy, Mathieu Leclerc, Anna Pineda, Tim Thomas, Monika Karmin, Ruly Fauzi. </li>
+                     <li> It benefited from suggestions by: Ethan Cochrane, Kristine Hardy, Mathieu Leclerc, Anna Pineda, Tim Thomas, Monika Karmin, Ruly Fauzi. </li>
                   </ul>
                    <h2>Citation</h2>
                     <p>To cite <i>Open-archeOcsean</i>, use:
                       <ul><li>
-                      <b>Plutniak S. 2025</b>. 'open-archeOcsean: an interactive catalogue of open source datasets for the archaeology of the Pacific and Southeast Asia regions (v1.0.0)'. <i>Zenodo</i>, <a href=https://doi.org/10.5281/zenodo.16812839 target=_blank>10.5281/zenodo.16812839</a>.
+                      <b>Plutniak S. 2025</b>. 'open-archeOcsean: an interactive catalogue of open source datasets for the archaeology of the Pacific and Southeast Asia regions (v1.0.0)'. <i>Zenodo</i>, doi: <a href=https://doi.org/10.5281/zenodo.16812839 target=_blank>10.5281/zenodo.16812839</a>.
                       </li></ul>
                     </p>
-                  <h2>Terms of use</h2>
+                  <h2>Terms of Use</h2>
                   <p>
-                    <i>Open-archeOcsean</i> is distributed under open licences:
+                    Use of <i>Open-archeOcsean</i> catalogue denotes agreement with the following terms:
                     <ul>
-                      <li>code: <a href=https://www.r-project.org/Licenses/GPL-3 target_blank>GPL-3</a>.</li>
-                      <li>data: <a href=https://creativecommons.org/licenses/by/4.0/ target_blank>CC-BY-4.0</a>.</li>
+                        <li> <i>Open-archeOcsean</i> is provided free of charge and is distributed under open licences:
+                          <ul>
+                            <li> All metadata and data are made available under the terms of the <a href=https://creativecommons.org/licenses/by/4.0/ target_blank>CC-BY-4.0</a> license.</li>
+                            <li>The software code draws on the <a href=https://CRAN.R-project.org/package=spatialCatalogueViewer target=_blank><i>spatialCatalogueViewer</i></a> R package, which is distibuted under a <a href=https://www.r-project.org/Licenses/GPL-3 target_blank>GPL-3</a> license.</li>
+                          </ul>
+                        </li>
+                        <li> All content is provided “as is” and the user shall hold the content providers free and harmless in connection with its use of such content.</li>
+                        <li> These terms of use are subject to change at any time and without notice, other than through posting the updated Terms of Use on this page.</li>
                     </ul>
+                    If you have any questions or comments with respect to <i>Open-archeOcsean</i>, or if you are unsure whether your intended use is in line with these Terms of Use, or if you seek permission for a use that does not fall within these Terms of Use, please contact us.
                   </p>
                    <h2>Support</h2>
                    <div style='text-align:left'>
@@ -220,10 +243,6 @@ credits.tab <-  "<div  style=width:50%;, align=left>
 
 
 
-labels.1 <- c("open", "embargoed", "failing", "restricted")
-labels.2 <- table(archeocsean.df$Access)[c(3, 1, 2, 4)]
-legend.labels <- sapply(seq_len(length(labels.v)), function(x)   paste0(labels.1[x], " (", labels.2[x], ")" ))
-
 
 
 # exec spatialCatalogueViewer----
@@ -234,8 +253,8 @@ spatialCatalogueViewer::spatialCatalogueViewer(data = archeocsean.df,
                                                map.provider = "Esri.WorldPhysical",
                                                map.set.lon = 180, map.set.lat = 0,
                                                map.legend.variable = "Access", 
-                                               map.legend.labels = legend.labels, 
-                                               map.legend.colors = c("darkgreen", "purple", "yellow", "red") ,
+                                               map.legend.labels = c("open",  "embargoed", "failing",  "restricted"), 
+                                               map.legend.colors = c("darkgreen", "purple", "yellow", "red"),
                                                map.height = 600,
                                                map.area.fill.color = "white",
                                                map.area.fill.opacity = .1,
