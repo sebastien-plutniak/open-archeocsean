@@ -211,7 +211,7 @@ credits.tab <-  "<div  style=width:50%;, align=left>
                     </p>
                   <h2>Terms of Use</h2>
                   <p>
-                    Use of <i>Open-archeOcsean</i> catalogue denotes agreement with the following terms:
+                    The use of the  <i>Open-archeOcsean</i> catalogue denotes agreement with the following terms:
                     <ul>
                         <li> <i>Open-archeOcsean</i> is provided free of charge and is distributed under open licences:
                           <ul>
@@ -233,6 +233,7 @@ credits.tab <-  "<div  style=width:50%;, align=left>
                           <td> is supported by: &nbsp;  &nbsp; &nbsp; <br> <br> <a href=https://www.ocsean.eu/  target=_blank><img height='60px' src=logo-ocsean.jpg></a></td>
                           <td>is developped at: &nbsp; &nbsp; &nbsp;  <br> <br> <a href=https://www.cnrs.fr target=_blank><img height='60px' src=logo-cnrs.png></a></td>
                           <td>  is hosted by:  <br> <br> <a href=https://www.huma-num.fr/ target=_blank><img height='60px' src=logo-humanum.jpg></a></td>
+                           <td> is listed as: &nbsp; <br>  <br><a href=https://www.re3data.org/repository/r3d100014682  target=_blank><img height='60px' src=logo-re3data.png></a></td>
                         </tr>
                       </table> 
                       <br>
