@@ -18,6 +18,13 @@ This initiative started in the context of the [*OCSEAN*](https://cordis.europa.e
 *open-archeOcsean* is powered by the [*spatialCatalogueViewer*](https://github.com/sebastien-plutniak/spatialCatalogueViewer/) application.
 
 
+# Contributions
+
+Contributions are welcome and can be done:
+
+* by email: sebastien.plutniak_at_cnrs.fr
+* by creating an [issue](https://github.com/sebastien-plutniak/open-archeocsean/issues) or a [pull request](https://github.com/sebastien-plutniak/open-archeocsean/pulls) on the *github* repository.
+
 
 # Terms of Use
 

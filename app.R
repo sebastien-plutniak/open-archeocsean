@@ -1,6 +1,7 @@
 remotes::install_github("sebastien-plutniak/spatialCatalogueViewer", upgrade = "never")
 
-
+log.df <- read.csv( "../openarcheocsean-log.csv")
+write.csv(rbind(log.df, "date" = format(Sys.Date())), "../openarcheocsean-log.csv", row.names = F)
 
 try(archeocsean.df <- read.csv("data/open-archeocsean-data_formated.csv", check.names=FALSE), silent=TRUE)
 
@@ -120,6 +121,13 @@ text.title <- "<h1>
               </h1>"
 
 ## left----
+
+## data categories ----
+# objects.categories <- sort(unique(c(archeocsean.df$material1, archeocsean.df$material2, archeocsean.df$material3,
+#                                     archeocsean.df$material4,archeocsean.df$material5)))
+# paste0(objects.categories[objects.categories != ""], collapse = ", ")
+
+
 text.left <- "<div style=width:90%;, align=left>
              <h2>Presentation</h2>
     <p>
@@ -131,8 +139,8 @@ text.left <- "<div style=width:90%;, align=left>
       <p>
       Use the <b>Search field</b>  to retrieve resources by:
                    <ul>
-                      <li><b>Material</b>: 
-                        <span data-toggle='tooltip' data-placement='bottom' title='bone, botanical, burial, eggshell, ethnography, excavation documents, glass, lithic, organic tools, paleoclimate, physical space, pottery, rice, sea level, sediments, shell'>
+                      <li><b>Object</b>: 
+                        <span data-toggle='tooltip' data-placement='bottom' title='bones, botanical, burial, charcoal, eggshell, ethnography, excavation documents, glass, islands, lithic, organic tools, paleoclimate, pottery, rice, sea level, sediments, shell, sites'>
                       <a href=>keywords</a></span>.</li>
                       <li><b>Measurement and description method</b>:  
                       <span data-toggle='tooltip' data-placement='bottom' title='granulometry, ICP-AES, isotopic, LA-ICP-MS, morphometrics, pXRF, radiocarbon, TL/OSL, TOC/TN, U/Th, XRD'>
@@ -178,17 +186,17 @@ contribute.tab <- "<div  style=width:50%;, align=left>
                     </p>
                   <h3>Spatial Coverage</h3>
                     <p>
-                      <i>Open-archeOcsean</i>'s area of interest spans between longitude = [91.1426, 257.6953] and latitude = [45.9511, -52.3756]. Note that the represented coverage of data sets exceeding this surface could have been reduced to their part fitting within this area of interest.
+                      <i>Open-archeOcsean</i>'s area of interest spans between longitude = [91, -109] and latitude = [46, -53]. Note that the represented coverage of data sets exceeding this surface could have been reduced to their part fitting within this area of interest.
                     </p>
                   <h3>Time Period</h3>
                     <p>
-                       From the earliest traces of human presence to today. However, note that datasets about recent period (e.g., colonial period) are referenced only if they present an interest for the study of long-term human presence in the region. 
+                       From the earliest traces of human presence to today. However, note that datasets about recent period (e.g., colonial period) are listed only if they help in the study of long-term human presence in the region. 
                     </p>
                   <h3>Public Availability</h3>
                     <p>
                       To be listed in <i>Open-archeOcsean</i>, a resource must at least meet the following requirements:
                       <ul>
-                        <li>be accessible online (possibly: at a determined date in the future for embargoed resources,  or under the condition of a free registration open to everyone), </li>
+                        <li>be accessible online (possibly:  in the future for embargoed resources if a date is declared; under registration if free and open to everyone), </li>
                         <li>be downloadable by users.</li>
                       </ul>
                        Resources which tend to comply with the <a href=https://www.go-fair.org/fair-principles/ target=_blank>FAIR</a> principles are favored. 
@@ -233,7 +241,7 @@ credits.tab <-  "<div  style=width:50%;, align=left>
                           <td> is supported by: &nbsp;  &nbsp; &nbsp; <br> <br> <a href=https://www.ocsean.eu/  target=_blank><img height='60px' src=logo-ocsean.jpg></a></td>
                           <td>is developped at: &nbsp; &nbsp; &nbsp;  <br> <br> <a href=https://www.cnrs.fr target=_blank><img height='60px' src=logo-cnrs.png></a></td>
                           <td>  is hosted by:  <br> <br> <a href=https://www.huma-num.fr/ target=_blank><img height='60px' src=logo-humanum.jpg></a></td>
-                           <td> is listed as: &nbsp; <br>  <br><a href=https://www.re3data.org/repository/r3d100014682  target=_blank><img height='60px' src=logo-re3data.png></a></td>
+                           <td> is listed in: &nbsp; <br>  <br><a href=https://www.re3data.org/repository/r3d100014682  target=_blank><img height='60px' src=logo-re3data.png></a></td>
                         </tr>
                       </table> 
                       <br>
