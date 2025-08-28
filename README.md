@@ -18,6 +18,15 @@ This initiative started in the context of the [*OCSEAN*](https://cordis.europa.e
 *open-archeOcsean* is powered by the [*spatialCatalogueViewer*](https://github.com/sebastien-plutniak/spatialCatalogueViewer/) application.
 
 
+# Data preservation policy
+
+Versions of *Open-archeOcsean* are archived for long-term preservation on:
+
+* [*Zenodo*](https://doi.org/10.5281/zenodo.16812838)
+* [*Softwareheritage*](https://archive.softwareheritage.org/browse/origin/?origin_url=https://github.com/sebastien-plutniak/open-archeocsean)
+
+
+
 # Terms of Use
 
 The use of the *Open-archeOcsean* catalogue denotes agreement with the following terms:
