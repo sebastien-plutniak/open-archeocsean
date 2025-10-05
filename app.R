@@ -160,7 +160,7 @@ text.left <- "<div style=width:90%;, align=left>
           <ul>
             <li><i>Open</i>: the resource can be directly accessed using the provided link.</li>
             <li><i>Restricted</i>: access to the resource must be requested using the provided link.</li>
-            <li><i>Embargoed</i>: access to the resource will be possible at a stated date in the future.</li>
+            <li><i>Embargoed</i>: access to the resource will be possible at a given future date.</li>
           </ul>
         </li>
         <li> <b>File format</b>: publication format of the dataset.</li>
@@ -186,7 +186,7 @@ contribute.tab <- "<div  style=width:50%;, align=left>
                     </p>
                   <h3>Spatial Coverage</h3>
                     <p>
-                      <i>Open-archeOcsean</i>'s area of interest spans between longitude = [91, -109] and latitude = [46, -53]. Note that the represented coverage of data sets exceeding this surface could have been reduced to their part fitting within this area of interest.
+                      <i>Open-archeOcsean</i>'s area of interest spans between longitude = [91, -109] and latitude = [46, -53]. Note that for data set with coverage larger than  <i>Open-archeOcsean</i>'s area of interest, the coverage might have been reduced to the surface fitting within our area of interest.
                     </p>
                   <h3>Time Period</h3>
                     <p>
@@ -194,12 +194,17 @@ contribute.tab <- "<div  style=width:50%;, align=left>
                     </p>
                   <h3>Public Availability</h3>
                     <p>
-                      To be listed in <i>Open-archeOcsean</i>, a resource must at least meet the following requirements:
+                      To be listed in <i>Open-archeOcsean</i>, a resource must be:
                       <ul>
-                        <li>be accessible online (possibly:  in the future for embargoed resources if a date is declared; under registration if free and open to everyone), </li>
-                        <li>be downloadable by users.</li>
+                        <li> accessible online:
+                          <ul>
+                            <li>now / in the future for embargoed resources if a date is declared</li>
+                            <li> openly / under registration, if free and open to everyone</li>.
+                          </ul>
+                        </li>
+                        <li>downloadable by users in a processable format.</li>
                       </ul>
-                       Resources which tend to comply with the <a href=https://www.go-fair.org/fair-principles/ target=_blank>FAIR</a> principles are favored. 
+                       Resources complying with the <a href=https://www.go-fair.org/fair-principles/ target=_blank>FAIR</a> principles are favored. 
                     </p>
                   </div>
 "
@@ -241,7 +246,10 @@ credits.tab <-  "<div  style=width:50%;, align=left>
                           <td> is supported by: &nbsp;  &nbsp; &nbsp; <br> <br> <a href=https://www.ocsean.eu/  target=_blank><img height='60px' src=logo-ocsean.jpg></a></td>
                           <td>is developped at: &nbsp; &nbsp; &nbsp;  <br> <br> <a href=https://www.cnrs.fr target=_blank><img height='60px' src=logo-cnrs.png></a></td>
                           <td>  is hosted by:  <br> <br> <a href=https://www.huma-num.fr/ target=_blank><img height='60px' src=logo-humanum.jpg></a></td>
-                           <td> is listed in: &nbsp; <br>  <br><a href=https://www.re3data.org/repository/r3d100014682  target=_blank><img height='60px' src=logo-re3data.png></a></td>
+                           <td> is listed in: &nbsp; <br>  <br>
+                           <a href=https://www.re3data.org/repository/r3d100014682  target=_blank><img height='60px' src=logo-re3data.png></a>
+                           <a href=https://fairsharing.org/6849  target=_blank><img height='60px' src=logo-fairsharing.jpg></a>
+                           </td>
                         </tr>
                       </table> 
                       <br>
@@ -262,8 +270,8 @@ spatialCatalogueViewer::spatialCatalogueViewer(data = archeocsean.df,
                                                map.provider = "Esri.WorldPhysical",
                                                map.set.lon = 180, map.set.lat = 0,
                                                map.legend.variable = "Access", 
-                                               map.legend.labels = c("open",  "embargoed", "failing",  "restricted"), 
-                                               map.legend.colors = c("darkgreen", "purple", "yellow", "red"),
+                                               map.legend.labels = c("open",  "embargoed",  "restricted"), 
+                                               map.legend.colors = c("darkgreen", "purple", "yellow"),
                                                map.height = 600,
                                                map.area.fill.color = "white",
                                                map.area.fill.opacity = .1,
