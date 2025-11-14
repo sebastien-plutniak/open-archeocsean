@@ -10,6 +10,11 @@ if( ! exists("archeocsean.df")){
   archeocsean.df <- read.csv("data/open-archeocsean-data.csv")
   archeocsean.df$resource.name <- archeocsean.df$name
   
+  # remove lines with no coordinates:
+  idx <- apply(archeocsean.df[, c("lon", "lat",	"bbox.lon1",	"bbox.lat1", "bbox.lon2",	"bbox.lat2")], 1, 
+        function(x) sum(is.na(x)))
+  archeocsean.df <- archeocsean.df[idx < 6, ]
+  
   ## resource name and link ----
   archeocsean.df$resource.name.html <- paste0("<a href=", archeocsean.df$download_url, " title='", archeocsean.df$description, "' target=_blank>", archeocsean.df$name, "</a> ",
                                 "<a href=", archeocsean.df$info_url, " title='Click to access related documentation.' target=_blank><img height=12px src=icon-doc.jpg></a>")
@@ -143,7 +148,7 @@ text.left <- "<div style=width:90%;, align=left>
                         <span data-toggle='tooltip' data-placement='bottom' title='bones, botanical, burial, charcoal, eggshell, ethnography, excavation documents, glass, islands, lithic, organic tools, paleoclimate, pottery, rice, sea level, sediments, shell, sites'>
                       <a href=>keywords</a></span>.</li>
                       <li><b>Measurement and description method</b>:  
-                      <span data-toggle='tooltip' data-placement='bottom' title='granulometry, ICP-AES, isotopic, LA-ICP-MS, morphometrics, pXRF, radiocarbon, TL/OSL, TOC/TN, U/Th, XRD'>
+                      <span data-toggle='tooltip' data-placement='bottom' title='3d modelling, granulometry, ICP-AES, isotopic, LA-ICP-MS, morphometrics, petrography, photography, pXRF, radiocarbon, technology, thin section, TL/OSL, TOC/TN, U/Th, XRD'>
                       <a href=>keywords</a></span>.</li>
                     </ul>
       Use <b>column filters</b> to retrieve resources by:
@@ -204,7 +209,7 @@ contribute.tab <- "<div  style=width:50%;, align=left>
                         </li>
                         <li>downloadable by users in a processable format.</li>
                       </ul>
-                       Resources complying with the <a href=https://www.go-fair.org/fair-principles/ target=_blank>FAIR</a> principles are favored. 
+                       Resources complying with the <a href=https://www.go-fair.org/fair-principles/ target=_blank>FAIR</a> principles are favored. <a href=https://www.gida-global.org/care target_blank>CARE</a> principles, if stated, are reflected by the 'Access' variable.
                     </p>
                   </div>
 "
@@ -214,7 +219,7 @@ credits.tab <-  "<div  style=width:50%;, align=left>
                 <h2>Credits </h2>
                   <ul>
                      <li> The <i>Open-archeOcsean</i> dataset and application are developed and maintained by <b>Sébastien Plutniak</b> (CNRS).</li>
-                     <li> It benefited from suggestions by: Ethan Cochrane, Kristine Hardy, Mathieu Leclerc, Anna Pineda, Tim Thomas, Monika Karmin, Ruly Fauzi. </li>
+                     <li> It benefited from suggestions by: Ethan Cochrane, Kristine Hardy, Mathieu Leclerc, Anna Pineda, Tim Thomas, Monika Karmin, Ruly Fauzi, Eugénie Gauvrit-Roux. </li>
                   </ul>
                    <h2>Citation</h2>
                     <p>To cite <i>Open-archeOcsean</i>, use:
@@ -248,7 +253,7 @@ credits.tab <-  "<div  style=width:50%;, align=left>
                           <td>  is hosted by:  <br> <br> <a href=https://www.huma-num.fr/ target=_blank><img height='60px' src=logo-humanum.jpg></a></td>
                            <td> is listed in: &nbsp; <br>  <br>
                            <a href=https://www.re3data.org/repository/r3d100014682  target=_blank><img height='60px' src=logo-re3data.png></a>
-                           <a href=https://fairsharing.org/6849  target=_blank><img height='60px' src=logo-fairsharing.jpg></a>
+                           <a href=https://fairsharing.org/6849  target=_blank><img height='40px' src=logo-fairsharing.jpg></a>
                            </td>
                         </tr>
                       </table> 
