@@ -47,8 +47,12 @@ if( ! exists("archeocsean.df")){
     score <- as.numeric(score)
     res <- ""
     if(! is.na(score)){
+      val <- c("", "open licence", "structured format", "non-proprietary format", "URI", "semantic web")
+      idx <- 0:score + 1
+      title.str <- paste0("Score: ", score, paste0(val[idx], collapse = ", "))
+      
       res <- paste0(c(
-        "<div title='Score: ", score, "'>",
+        "<div title='", title.str, "'>",
         paste0(rep("<font  color='gold'>★</font>", score), collapse = ""),
         paste0(rep("<font color='LightGray'>★</font>", 5 - score), collapse = ""),
         "</div>"
