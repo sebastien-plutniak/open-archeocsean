@@ -12,12 +12,12 @@ if( ! exists("archeocsean.df")){
   
   # remove lines with no coordinates:
   idx <- apply(archeocsean.df[, c("lon", "lat",	"bbox.lon1",	"bbox.lat1", "bbox.lon2",	"bbox.lat2")], 1, 
-        function(x) sum(is.na(x)))
+               function(x) sum(is.na(x)))
   archeocsean.df <- archeocsean.df[idx < 6, ]
   
   ## resource name and link ----
   archeocsean.df$resource.name.html <- paste0("<a href=", archeocsean.df$download_url, " title='", archeocsean.df$description, "' target=_blank>", archeocsean.df$name, "</a> ",
-                                "<a href=", archeocsean.df$info_url, " title='Click to access related documentation.' target=_blank><img height=12px src=icon-doc.jpg></a>")
+                                              "<a href=", archeocsean.df$info_url, " title='Click to access related documentation.' target=_blank><img height=12px src=icon-doc.jpg></a>")
   
   ## PID ----
   archeocsean.df$pid <- "url"
@@ -28,9 +28,9 @@ if( ! exists("archeocsean.df")){
   ## popup ----
   archeocsean.df$tab.link <- paste0("<a href=", archeocsean.df$download_url, " title='Click to access this resource' target=_blank>", archeocsean.df$name, "</a>")
   archeocsean.df$popup <- paste0("<b>", archeocsean.df$tab.link, "</b><br>", 
-                        archeocsean.df$description, ".<br>",
-                        "<b>Licence:</b> ", archeocsean.df$licence, "<br>",
-                        "<b>Access:</b> ", archeocsean.df$access)
+                                 archeocsean.df$description, ".<br>",
+                                 "<b>Licence:</b> ", archeocsean.df$licence, "<br>",
+                                 "<b>Access:</b> ", archeocsean.df$access)
   
   ## periods -----
   # archeocsean.df$period <-  archeocsean.df$period1
@@ -40,7 +40,7 @@ if( ! exists("archeocsean.df")){
   
   ## color ----
   archeocsean.df$fillColor <- as.character(factor(archeocsean.df$access, c("open", "embargoed", "failing", "restricted"),
-                                 labels =  c("darkgreen", "purple", "yellow", "red")))
+                                                  labels =  c("darkgreen", "purple", "yellow", "red")))
   
   ## 5 stars scale ----
   five.stars.score <- function(item, score){
@@ -140,13 +140,13 @@ text.title <- "<h1>
 text.left <- "<div style=width:90%;, align=left>
              <h2>Presentation</h2>
     <p>
-      <i>Open-archeOcsean</i> is a curated catalogue of open-source data sets regarding the archaeology of the Pacific and Southeast Asia regions.
+      <i>Open-archeOcsean</i> is a curated catalogue of open resources useful to the archaeology of the Pacific and Southeast Asia regions.
       This initiative started in the context of the <a href=https://www.ocsean.eu  target=_blank><i>Ocsean. Oceanic and Southeast Asian Navigators</i></a> project. 
-    The data and app code source are available on <a href=https://github.com/sebastien-plutniak/open-archeocsean target=_blank><i>github</i></a> and archived on <a href=https://doi.org/10.5281/zenodo.16812839 target=_blank><i>Zenodo</i></a>.
+    The data and application code source are available on <a href=https://github.com/sebastien-plutniak/open-archeocsean target=_blank><i>github</i></a>. Versions of the app are archived on <a href=https://doi.org/10.5281/zenodo.16812839 target=_blank><i>Zenodo</i></a>.
     </p>
     <h3>Table Exploration</h3>
       <p>
-      Use the <b>Search field</b>  to retrieve resources by:
+      Use the <b>'search' field</b>  to retrieve resources by:
                    <ul>
                       <li><b>Object</b>: 
                         <span data-toggle='tooltip' data-placement='bottom' title='bones, botanical, burial, charcoal, eggshell, ethnography, excavation documents, glass, islands, lithic, organic tools, paleoclimate, pottery, rice, sea level, sediments, shell, sites'>
@@ -162,7 +162,7 @@ text.left <- "<div style=width:90%;, align=left>
         <li> <b>Scope</b>:
           <ul>
             <li><i>Single site</i>: the resource regards one archaeological site, represented as a point on the map.</li>
-            <li><i>Multi sites</i>: the resource regards several archaeological sites, represented as surfaces on the map.</li>
+            <li><i>Multi sites</i>: the resource regards several archaeological sites, represented as a surface on the map.</li>
           </ul>
         </li>
         <li> <b>Access mode</b>:
@@ -172,7 +172,7 @@ text.left <- "<div style=width:90%;, align=left>
             <li><i>Embargoed</i>: access to the resource will be possible at a given future date.</li>
           </ul>
         </li>
-        <li> <b>File format</b>: publication format of the dataset.</li>
+        <li> <b>File format</b>: file format in which data are published in the resource.</li>
         </ul>
       </p>
       </div>"
@@ -248,20 +248,21 @@ credits.tab <-  "<div  style=width:50%;, align=left>
                   </p>
                    <h2>Support</h2>
                    <div style='text-align:left'>
-                      <b> <i>Open-archeOcsean</i></b>
+                      <b> <i>Open-archeOcsean</i></b> is
                       <br><br>
                       <table> 
                         <tr>
-                          <td> is supported by: &nbsp;  &nbsp; &nbsp; <br> <br> <a href=https://www.ocsean.eu/  target=_blank><img height='60px' src=logo-ocsean.jpg></a></td>
-                          <td>is developped at: &nbsp; &nbsp; &nbsp;  <br> <br> <a href=https://www.cnrs.fr target=_blank><img height='60px' src=logo-cnrs.png></a></td>
-                          <td>  is hosted by:  <br> <br> <a href=https://www.huma-num.fr/ target=_blank><img height='60px' src=logo-humanum.jpg></a></td>
-                           <td> is listed in: &nbsp; <br>  <br>
-                           <a href=https://www.re3data.org/repository/r3d100014682  target=_blank><img height='60px' src=logo-re3data.png></a>
-                           <a href=https://fairsharing.org/6849  target=_blank><img height='40px' src=logo-fairsharing.jpg></a>
-                           </td>
-                        </tr>
+                          <td> supported by: &nbsp;  &nbsp; &nbsp; <br> <br> <a href=https://www.ocsean.eu  target=_blank><img height='50px' src=logo-ocsean.jpg></a></td>
+                          <td> developped at: &nbsp; &nbsp; &nbsp;  <br> <br> <a href=https://www.cnrs.fr target=_blank><img height='50px' src=logo-cnrs.png></a></td>
+                          <td>   hosted by:  <br> <br> <a href=https://www.huma-num.fr target=_blank><img height='50px' src=logo-humanum.jpg></a></td>
+                          </tr>
                       </table> 
-                      <br>
+                      <br><br>
+                       listed in: 
+                           <a href=https://www.re3data.org/repository/r3d100014682  target=_blank><img height='50px' src=logo-re3data.png></a>  &nbsp;  &nbsp;
+                           <a href=https://fairsharing.org/6849  target=_blank><img height='50px' src=logo-fairsharing.jpg></a>  &nbsp;  &nbsp;
+                           <a href=https://marketplace.sshopencloud.eu/tool-or-service/E8NWsR  target=_blank><img height='50px' src=logo-sshom.jpg></a>
+                      <br><br><br>
                       <p>    
                          This project has received funding from the European Union’s Horizon 2020 research and innovation programme under the Marie Skłodowska-Curie grant agreement No <a href=https://cordis.europa.eu/project/id/873207 target_blank>873207</a>.
                       </p>
