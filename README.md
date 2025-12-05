@@ -10,7 +10,7 @@
 
 # Summary
 
-*Open-archeOcsean* is an interactive catalogue of open source datasets for the archaeology of the Pacific and Southeast Asia regions. Access it [online](https://analytics.huma-num.fr/open-archeocsean/).
+*Open-archeOcsean* is an interactive catalogue of open resources for the archaeology of the Pacific and (South-)east Asia regions. Access it [online](https://analytics.huma-num.fr/open-archeocsean/).
 This initiative started in the context of the [*OCSEAN*](https://cordis.europa.eu/project/id/873207) *OCeanic and South East Asian Navigators* European scientific project.
 
 # Software
