@@ -6,14 +6,116 @@ write.csv(rbind(log.df, "date" = format(Sys.Date())), "../openarcheocsean-log.cs
 try(archeocsean.df <- read.csv("data/open-archeocsean-data_formated.csv", check.names=FALSE), silent=TRUE)
 
 if( ! exists("archeocsean.df")){
-  # data preparation  ----
+  # data preparation (1)  ----
   archeocsean.df <- read.csv("data/open-archeocsean-data.csv")
   archeocsean.df$resource.name <- archeocsean.df$name
   
-  # remove lines with no coordinates:
-  idx <- apply(archeocsean.df[, c("lon", "lat",	"bbox.lon1",	"bbox.lat1", "bbox.lon2",	"bbox.lat2")], 1, 
-               function(x) sum(is.na(x)))
-  archeocsean.df <- archeocsean.df[idx < 6, ]
+  # ## remove lines with no coordinates: ----
+  # idx <- apply(archeocsean.df[, c("lon", "lat",	"bbox.lon1",	"bbox.lat1", "bbox.lon2",	"bbox.lat2")], 1, 
+  #              function(x) sum(is.na(x)))
+  # archeocsean.df <- archeocsean.df[idx < 6, ]
+  
+  
+  # generate stats ----
+  library(ggplot2)
+  
+  ## methods ----
+  measurements.values <- unlist(archeocsean.df[, grep("measurement", names(archeocsean.df))])
+  measurements.values <- data.frame(sort(table(measurements.values)))
+  measurements.values <- measurements.values[measurements.values$measurements.values != "", ]
+  
+  measurements.values$domain <- "archaeology"
+  # unique(measurements.values$measurements.values)
+  
+  measurements.values[measurements.values$measurements.values %in% c("granulometry", "petrography", "thin section"),]$domain <- "geology"
+  measurements.values[measurements.values$measurements.values %in% c("radiocarbon", "U/Th", "TL/OSL"),]$domain <- "datation"
+  measurements.values[measurements.values$measurements.values %in% c("photography", "3d modelling", "LIDAR"),]$domain <- "visualisation"
+  measurements.values[measurements.values$measurements.values %in% c("AMS", "pXRF", "XRD", "LA-ICP-MS", "ICP-AES", "isotopic", "TOC/TN"),]$domain <- "chemical composition"
+  
+  
+  ggplot(measurements.values, aes(y = measurements.values, x = Freq, fill = domain)) +
+    theme_light() +
+    scale_fill_viridis_d("Domain") +
+    geom_bar(stat = "identity",  color= "black", linewidth = .3) +
+    ylab("Methods") + xlab("Nr of resources") 
+  ggsave("www/archeocsean-measurement.png", width = 8, height = 5)
+  
+  
+  ## materials ----
+  material.values <- unlist(archeocsean.df[, grep("material", names(archeocsean.df))])
+  material.values <- data.frame(sort(table(material.values)))
+  material.values <- material.values[material.values$material.values != "", ]
+  
+  material.values$category <- "Archaeological remains"
+  # unique(material.values$material.values)
+  
+  material.values[material.values$material.values %in% c("sites", "burial"), ]$category <- "Archaeological features"
+  material.values[material.values$material.values %in% c("paleoclimate", "islands", "sea level"), ]$category <- "Environment"
+  material.values[material.values$material.values %in% c("ethnography"), ]$category <- "Ethnography"
+  material.values[material.values$material.values %in% c("sediments"), ]$category <- "Sediments"
+  material.values[material.values$material.values %in% c("charcoal", "rice", "botanical"), ]$category <- "Vegetal remains"
+  material.values[material.values$material.values %in% c("excavation documents"), ]$category <- "Excavation documents"
+  
+  ggplot(material.values, aes(y = material.values, x = Freq, fill= category)) +
+    theme_light() +
+    scale_fill_viridis_d("Category") +
+    geom_bar(stat = "identity", color= "black", linewidth = .3) + 
+    ylab("Material category") + xlab("Nr of resources")
+  ggsave("www/archeocsean-material.png", width = 8, height = 5)
+  
+  
+  ## licences ----
+  licences.values <- data.frame(sort(table(archeocsean.df$licence)))
+  
+  licences.values$fill <- "gray"
+  licences.values[licences.values$Var1 == "?",]$fill <- "white"
+  
+  ggplot(licences.values, aes(y = Var1, x = Freq, fill = fill)) +
+    theme_light() +
+    geom_bar(stat = "identity", show.legend = F, color= "black", linewidth = .3) + 
+    scale_fill_grey(start = 0.4,
+                    end = 1) +
+    ylab("Licence") + xlab("Nr of resources")
+  ggsave("www/archeocsean-licences.png", width = 6, height = 5)
+  
+  
+  ## file formats ----
+  formats.values <- data.frame(sort(table(archeocsean.df$file.format)))
+  
+  # unique(formats.values$Var1)
+  formats.values$type <- ""
+  
+  formats.values[formats.values$Var1 %in% c("CSV", "TXT", "XLSX", "XLS"), ]$type <- "tabular"
+  formats.values[formats.values$Var1 %in% c("ACCDB"), ]$type <- "database"
+  formats.values[formats.values$Var1 %in% c("DOC", "HTML"), ]$type <- "text"
+  formats.values[formats.values$Var1 %in% c("TIFF, SHP", "JPG", "OBJ"), ]$type <- "graphical"
+  formats.values[formats.values$Var1 %in% c("GeoTIFF", "SHP", "MPK"), ]$type <- "spatial"
+  formats.values[formats.values$Var1 %in% c("PDF"), ]$type <- "other"
+  
+  ggplot(formats.values, aes(y = Var1, x = Freq, fill = type)) +
+    theme_light() +
+    geom_bar(stat = "identity", show.legend = T, color= "black", linewidth = .3) + 
+    scale_fill_viridis_d() +
+    ylab("File format") + xlab("Nr of resources")
+  ggsave("www/archeocsean-file-format.png", width = 8, height = 5)
+  
+  
+  ## 5-stars score ----
+  five.stars.score <- data.frame(table(archeocsean.df$five.stars.score))
+  
+  five.stars.score$Var1 <- as.character(five.stars.score$Var1)
+  five.stars.score <- rbind(five.stars.score, c(5,0))
+  five.stars.score$Freq <- as.numeric(five.stars.score$Freq)
+  
+  ggplot(five.stars.score, aes(x = Var1, y = Freq)) +
+    theme_light() +
+    geom_bar(stat = "identity", show.legend = T, color= "black", linewidth = 0) + 
+    scale_x_discrete("5-stars score") +
+    ylab("Nr of resources") 
+  ggsave("www/archeocsean-five-stars.png", width = 8, height = 5)
+  
+  
+  # data preparation (2) ----
   
   ## resource name and link ----
   archeocsean.df$resource.name.html <- paste0("<a href=", archeocsean.df$download_url, " title='", archeocsean.df$description, "' target=_blank>", archeocsean.df$name, "</a> ",
@@ -152,7 +254,7 @@ text.left <- "<div style=width:90%;, align=left>
                         <span data-toggle='tooltip' data-placement='bottom' title='bones, botanical, burial, charcoal, eggshell, ethnography, excavation documents, glass, islands, lithic, organic tools, paleoclimate, pottery, rice, sea level, sediments, shell, sites'>
                       <a href=>keywords</a></span>.</li>
                       <li><b>Measurement and description method</b>:  
-                      <span data-toggle='tooltip' data-placement='bottom' title='3d modelling, granulometry, ICP-AES, isotopic, LA-ICP-MS, morphometrics, petrography, photography, pXRF, radiocarbon, technology, thin section, TL/OSL, TOC/TN, U/Th, XRD'>
+                      <span data-toggle='tooltip' data-placement='bottom' title='3d modelling, granulometry, ICP-AES, isotopic, LA-ICP-MS, mapping, morphometrics, petrography, photography, pXRF, radiocarbon, technology, thin section, TL/OSL, TOC/TN, U/Th, XRD'>
                       <a href=>keywords</a></span>.</li>
                     </ul>
       Use <b>column filters</b> to retrieve resources by:
@@ -179,6 +281,21 @@ text.left <- "<div style=width:90%;, align=left>
 
 text.bottom <- "Click on the <img height=12px src=icon-doc.jpg> symbol to access the related documentation."
 
+
+## summary ----
+summary.tab <-  "<div  style=width:50%;, align=left> 
+      <h2>Categories of material</h2>
+      <img width='100%' src=archeocsean-material.png>
+      <h2>Measurement & description methods</h2>
+      <img width='100%' src=archeocsean-measurement.png>
+      <h2>Licence</h2>
+      <img width='100%' src=archeocsean-licences.png>
+      <h2>Five-stars score</h2>
+      <img width='100%' src=archeocsean-five-stars.png>
+      <h2>File formats</h2>
+      <img width='100%' src=archeocsean-file-format.png>
+   </div>"
+
 ## contribute ----
 contribute.tab <- "<div  style=width:50%;, align=left> 
                     <h2>How to Contribute?</h2>
@@ -195,11 +312,11 @@ contribute.tab <- "<div  style=width:50%;, align=left>
                     </p>
                   <h3>Spatial Coverage</h3>
                     <p>
-                      <i>Open-archeOcsean</i>'s area of interest spans between longitude = [91, -109] and latitude = [46, -53]. Note that for data set with coverage larger than  <i>Open-archeOcsean</i>'s area of interest, the coverage might have been reduced to the surface fitting within our area of interest.
+                      <i>Open-archeOcsean</i>'s area of interest spans between longitude = [91, -109] and latitude = [46, -53]. Note that for data set with coverage larger than  <i>Open-archeOcsean</i>'s area of interest, the encoded coverage might have been reduced to the surface fitting within our area of interest.
                     </p>
                   <h3>Time Period</h3>
                     <p>
-                       From the earliest traces of human presence to today. However, note that datasets about recent period (e.g., colonial period) are listed only if they help in the study of long-term human presence in the region. 
+                       From the earliest traces of <i>homo</i> presence to the beginning of the 20th century. 
                     </p>
                   <h3>Public Availability</h3>
                     <p>
@@ -207,7 +324,7 @@ contribute.tab <- "<div  style=width:50%;, align=left>
                       <ul>
                         <li> accessible online:
                           <ul>
-                            <li>now / in the future for embargoed resources if a date is declared</li>
+                            <li> now / at a stated date in the future for embargoed resources</li>
                             <li> openly / under registration, if free and open to everyone</li>.
                           </ul>
                         </li>
@@ -291,7 +408,7 @@ spatialCatalogueViewer::spatialCatalogueViewer(data = archeocsean.df,
                                                table.filter = "top", 
                                                table.pageLength = 15,
                                                data.download.button = TRUE,
-                                               tabs.contents = list("Contribute" = contribute.tab, "Credits" = credits.tab),
+                                               tabs.contents = list("Contribute" = contribute.tab, "Summary" = summary.tab, "Credits" = credits.tab),
                                                css = css, js = js,
                                                theme = "cerulean") 
 
